@@ -7,7 +7,7 @@ const internal = require('node:stream');
 dotenv.config();
 TOKEN = process.env.DISCORD_TOKEN
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers] });
 
 client.commands = new Collection();
 const commandsPath = path.join(__dirname, 'commands');
