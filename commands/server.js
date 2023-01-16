@@ -1,13 +1,5 @@
 const { SlashCommandBuilder } = require('discord.js');
-
-// role id
-// meme_role = '1051183997805400085';
-// photo_role = '1059182297884131349';
-// chat_role = '1051462150385836102';
-// story_role = '1034282775181791342';
-// jol_rol = '1024294826478419998';
-boss_role = '1063843040768303154';
-normal_role = '1063843445514444925';
+const { roles } = require('../config.json');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -17,10 +9,22 @@ module.exports = {
 		// interaction.guild is the object representing the Guild in which the command was run
 		
 		// await interaction.deferReply(); // allow longer calculation
+
+		await interaction.guild.members.fetch();  // fetch all member and roles first.
+		await interaction.guild.roles.fetch();
+
+		const candidates = {};
+		// loop roles and record occurance and add scores
+		for (const role in roles) {
+			const role_data = interaction.guild.roles.cache.get(roles[role]["id"])
+			if (!role_data) continue;
+			const members = role_data.members.map(m => m.user.tag);
+
+			for (const member in members) {
+				candidates[members[member]] = (candidates[members[member]] || 0) + roles[role]["score"];
+			}
+		}
 		
-		interaction.guild.members.fetch();
-		interaction.guild.roles.fetch();
-		const normal = interaction.guild.roles.cache.get(normal_role).members.map(m => m.user.tag);
 
 		await interaction.reply({content: `${normal.join('\n')}`, ephemeral: true});
 	},
